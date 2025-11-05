@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -9,139 +11,103 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const Navigation = () => {
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+
+  if (!isDesktop) return null;
+
   return (
-    <NavigationMenu className="hidden lg:flex">
-      <NavigationMenuList className="flex">
-        {/* Features */}
-        <NavigationMenuItem>
-          <NavigationMenuTrigger className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]">
-            Features
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[200px] gap-4">
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/features/todo-list"
-                    className="flex-row items-center gap-2 text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]"
-                  >
-                    <Image
-                      src="/icon-todo.svg"
-                      alt="Todo List"
-                      width={14}
-                      height={16}
-                    />
-                    Todo List
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/features/calendar"
-                    className="flex-row items-center gap-2 text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]"
-                  >
-                    <Image
-                      src="/icon-calendar.svg"
-                      alt="Calendar"
-                      width={16}
-                      height={16}
-                    />
-                    Calendar
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/features/reminders"
-                    className="flex-row items-center gap-2 text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]"
-                  >
-                    <Image
-                      src="/icon-reminders.svg"
-                      alt="Reminders"
-                      width={13}
-                      height={17}
-                    />
-                    Reminders
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/features/planning"
-                    className="flex-row items-center gap-2 text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]"
-                  >
-                    <Image
-                      src="/icon-planning.svg"
-                      alt="Planning"
-                      width={16}
-                      height={16}
-                    />
-                    Planning
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        {/* Company */}
-        <NavigationMenuItem>
-          <NavigationMenuTrigger className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]">
-            Company
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul>
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/company/history"
-                    className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]"
-                  >
-                    History
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/company/our-team"
-                    className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]"
-                  >
-                    Our Team
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/company/blog"
-                    className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]"
-                  >
-                    Blog
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        {/* Careers */}
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link
-              href="/careers"
-              className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]"
-            >
-              Careers
-            </Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-        {/* About */}
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link
-              href="/about"
-              className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]"
-            >
-              About
-            </Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+    <nav aria-label="Main navigation">
+      <NavigationMenu>
+        <NavigationMenuList>
+          {/* Features */}
+          <NavigationMenuItem>
+            <NavigationMenuTrigger aria-label="Open Features menu">Features</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[200px] gap-2 p-2">
+                {[
+                  { href: "/features/todo-list", icon: "/icon-todo.svg", label: "Todo List" },
+                  { href: "/features/calendar", icon: "/icon-calendar.svg", label: "Calendar" },
+                  { href: "/features/reminders", icon: "/icon-reminders.svg", label: "Reminders" },
+                  { href: "/features/planning", icon: "/icon-planning.svg", label: "Planning" },
+                ].map(({ href, icon, label }) => (
+                  <li key={label}>
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href={href}
+                        className="flex flex-row items-center gap-3 px-2 py-2 text-sm text-[#686868] hover:text-[#151515]"
+                        role="menuitem"
+                        aria-label={`Go to ${label}`}
+                      >
+                        <Image
+                          src={icon}
+                          alt={`${label} icon`}
+                          width={16}
+                          height={16}
+                          loading="lazy"
+                        />
+                        {label}
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          {/* Company */}
+          <NavigationMenuItem>
+            <NavigationMenuTrigger aria-label="Open Company menu">Company</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[200px] gap-2 p-2">
+                {["History", "Our Team", "Blog"].map((item) => (
+                  <li key={item}>
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href={`/company/${item.toLowerCase().replace(" ", "-")}`}
+                        className="block px-2 py-2 text-sm text-[#686868] hover:text-[#151515]"
+                        role="menuitem"
+                      >
+                        {item}
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          {/* Careers */}
+          <NavigationMenuItem>
+            <NavigationMenuLink asChild>
+              <Link
+                href="/careers"
+                className="px-2 py-2 text-sm text-[#686868] hover:text-[#151515]"
+                aria-label="Go to Careers"
+              >
+                Careers
+              </Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+
+          {/* About */}
+          <NavigationMenuItem>
+            <NavigationMenuLink asChild>
+              <Link
+                href="/about"
+                className="px-2 py-2 text-sm text-[#686868] hover:text-[#151515]"
+                aria-label="Go to About page"
+              >
+                About
+              </Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+    </nav>
   );
 };
+
 export default Navigation;

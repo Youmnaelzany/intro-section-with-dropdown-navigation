@@ -21,8 +21,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${epilogue.variable} antialiased`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+    >
+      <body className={`${epilogue.variable} mx-auto max-w-7xl antialiased`}>
         <Header />
         {children}
       </body>

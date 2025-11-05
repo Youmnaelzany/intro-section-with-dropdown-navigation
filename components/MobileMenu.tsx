@@ -1,18 +1,20 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 import { ChevronDown, Menu } from "lucide-react";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+const Sheet = dynamic(() => import("@/components/ui/sheet").then((mod) => mod.Sheet), {
+  ssr: false,
+});
+const SheetContent = dynamic(() => import("@/components/ui/sheet").then((mod) => mod.SheetContent));
+const SheetDescription = dynamic(() =>
+  import("@/components/ui/sheet").then((mod) => mod.SheetDescription)
+);
+const SheetTrigger = dynamic(() => import("@/components/ui/sheet").then((mod) => mod.SheetTrigger));
 
 export default function MobileMenu() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -21,24 +23,32 @@ export default function MobileMenu() {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
+  const closeMenu = () => setOpenMenu(null);
+
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <Sheet>
-        <SheetTrigger>
+        <SheetTrigger aria-label="Open navigation menu">
           <Menu className="size-7 text-[#151515]" />
         </SheetTrigger>
 
         <SheetContent
           side="right"
           className="w-[75%] bg-white/95 p-6 backdrop-blur-md"
+          onEscapeKeyDown={closeMenu}
         >
           <SheetDescription className="space-y-8">
-            <nav className="mt-10 flex flex-col gap-6">
+            <nav
+              aria-label="Mobile navigation"
+              className="mt-10 flex flex-col gap-6"
+            >
               {/* Features */}
               <div className="relative">
                 <button
                   onClick={() => toggleMenu("features")}
-                  className="flex w-full items-center justify-between text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all hover:text-[#151515]"
+                  aria-expanded={openMenu === "features"}
+                  aria-controls="features-menu"
+                  className="flex w-full items-center justify-between px-2 py-3 text-sm font-medium text-[#686868] hover:text-[#151515]"
                 >
                   Features
                   <ChevronDown
@@ -47,65 +57,55 @@ export default function MobileMenu() {
                     }`}
                   />
                 </button>
-                {openMenu === "features" && (
-                  <div className="absolute top-full left-0 z-50 mt-2 flex w-[200px] flex-col gap-4 rounded-md bg-white p-6 shadow-lg">
-                    <Link
-                      href="/features/todo-list"
-                      className="flex items-center gap-2 text-sm leading-[115%] font-medium tracking-normal text-[#686868] hover:text-[#151515]"
-                    >
-                      <Image
-                        src="/icon-todo.svg"
-                        alt="Todo List"
-                        width={14}
-                        height={16}
-                      />
-                      Todo List
-                    </Link>
-                    <Link
-                      href="/features/calendar"
-                      className="flex items-center gap-2 text-sm leading-[115%] font-medium tracking-normal text-[#686868] hover:text-[#151515]"
-                    >
-                      <Image
-                        src="/icon-calendar.svg"
-                        alt="Calendar"
-                        width={16}
-                        height={16}
-                      />
-                      Calendar
-                    </Link>
-                    <Link
-                      href="/features/reminders"
-                      className="flex items-center gap-2 text-sm leading-[115%] font-medium tracking-normal text-[#686868] hover:text-[#151515]"
-                    >
-                      <Image
-                        src="/icon-reminders.svg"
-                        alt="Reminders"
-                        width={13}
-                        height={17}
-                      />
-                      Reminders
-                    </Link>
-                    <Link
-                      href="/features/planning"
-                      className="flex items-center gap-2 text-sm leading-[115%] font-medium tracking-normal text-[#686868] hover:text-[#151515]"
-                    >
-                      <Image
-                        src="/icon-planning.svg"
-                        alt="Planning"
-                        width={16}
-                        height={16}
-                      />
-                      Planning
-                    </Link>
+
+                <div
+                  id="features-menu"
+                  role="menu"
+                  className={`overflow-hidden transition-all duration-300 ${
+                    openMenu === "features" ? "max-h-[300px] opacity-100" : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <div className="mt-2 flex flex-col gap-4 rounded-md bg-white p-6 shadow-md">
+                    {[
+                      { href: "/features/todo-list", icon: "/icon-todo.svg", label: "Todo List" },
+                      { href: "/features/calendar", icon: "/icon-calendar.svg", label: "Calendar" },
+                      {
+                        href: "/features/reminders",
+                        icon: "/icon-reminders.svg",
+                        label: "Reminders",
+                      },
+                      { href: "/features/planning", icon: "/icon-planning.svg", label: "Planning" },
+                    ].map(({ href, icon, label }) => (
+                      <Link
+                        key={label}
+                        href={href}
+                        role="menuitem"
+                        aria-label={`Go to ${label}`}
+                        onClick={closeMenu}
+                        className="flex items-center gap-2 text-sm font-medium text-[#686868] hover:text-[#151515]"
+                      >
+                        <Image
+                          src={icon}
+                          alt={`${label} icon`}
+                          width={16}
+                          height={16}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        {label}
+                      </Link>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Company */}
               <div className="relative">
                 <button
                   onClick={() => toggleMenu("company")}
-                  className="flex w-full items-center justify-between text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all hover:text-[#151515]"
+                  aria-expanded={openMenu === "company"}
+                  aria-controls="company-menu"
+                  className="flex w-full items-center justify-between px-2 py-3 text-sm font-medium text-[#686868] hover:text-[#151515]"
                 >
                   Company
                   <ChevronDown
@@ -114,54 +114,59 @@ export default function MobileMenu() {
                     }`}
                   />
                 </button>
-                {openMenu === "company" && (
-                  <div className="absolute top-full left-0 z-50 mt-2 flex w-[200px] flex-col gap-4 rounded-md bg-white p-6 shadow-lg">
-                    <Link
-                      href="/company/history"
-                      className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] hover:text-[#151515]"
-                    >
-                      History
-                    </Link>
-                    <Link
-                      href="/company/our-team"
-                      className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] hover:text-[#151515]"
-                    >
-                      Our Team
-                    </Link>
-                    <Link
-                      href="/company/blog"
-                      className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] hover:text-[#151515]"
-                    >
-                      Blog
-                    </Link>
+
+                <div
+                  id="company-menu"
+                  role="menu"
+                  className={`overflow-hidden transition-all duration-300 ${
+                    openMenu === "company" ? "max-h-[300px] opacity-100" : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <div className="mt-2 flex flex-col gap-4 rounded-md bg-white p-6 shadow-md">
+                    {["History", "Our Team", "Blog"].map((item) => (
+                      <Link
+                        key={item}
+                        href={`/company/${item.toLowerCase().replace(" ", "-")}`}
+                        role="menuitem"
+                        onClick={closeMenu}
+                        className="text-sm font-medium text-[#686868] hover:text-[#151515]"
+                      >
+                        {item}
+                      </Link>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Simple Links */}
               <Link
                 href="/careers"
-                className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] hover:text-[#151515]"
+                onClick={closeMenu}
+                className="px-2 py-3 text-sm font-medium text-[#686868] hover:text-[#151515]"
               >
                 Careers
               </Link>
               <Link
                 href="/about"
-                className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] hover:text-[#151515]"
+                onClick={closeMenu}
+                className="px-2 py-3 text-sm font-medium text-[#686868] hover:text-[#151515]"
               >
                 About
               </Link>
             </nav>
+
             <div className="flex flex-col items-center justify-center gap-6">
               <Link
                 href="/login"
-                className="text-sm leading-[115%] font-medium tracking-normal text-[#686868] transition-all duration-300 ease-in-out hover:text-[#151515]"
+                onClick={closeMenu}
+                className="text-sm font-medium text-[#686868] hover:text-[#151515]"
               >
                 Login
               </Link>
               <Link
                 href="/signup"
-                className="rounded-md border border-[#686868] px-6 py-2 text-sm font-medium text-[#686868] transition-colors duration-300 ease-in-out hover:border-[#222] hover:text-[#222]"
+                onClick={closeMenu}
+                className="rounded-md border border-[#686868] px-6 py-2 text-sm font-medium text-[#686868] hover:border-[#222] hover:text-[#222]"
               >
                 Register
               </Link>
