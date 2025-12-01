@@ -25,7 +25,10 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
     >
-      <body className={`${epilogue.variable} mx-auto max-w-7xl antialiased`}>
+      <body
+        suppressHydrationWarning
+        className={`${epilogue.variable} mx-auto max-w-7xl antialiased`}
+      >
         <Header />
         {children}
       </body>

@@ -16,17 +16,15 @@ export function useMediaQuery(query: string): boolean {
 
     if (mql.addEventListener) {
       mql.addEventListener("change", handler);
-    } else {
-      // @ts-expect-error Older browsers
-      mql.addListener(handler);
+    } else if (typeof (mql as any).addListener === "function") {
+      (mql as any).addListener(handler);
     }
 
     return () => {
       if (mql.removeEventListener) {
         mql.removeEventListener("change", handler);
-      } else {
-        // @ts-expect-error Older browsers
-        mql.removeListener(handler);
+      } else if (typeof (mql as any).removeListener === "function") {
+        (mql as any).removeListener(handler);
       }
     };
   }, [query]);
